@@ -6,4 +6,4 @@ This project implements a data engineering pipeline using:
 - Auto Loader
 - Databricks Asset Bundles
 - AI Query functions
-- Medallion Architecture: Bronze / Silver / Gold architecture
+- Medallion Architecture: Bronze / Silver / Gold layers
