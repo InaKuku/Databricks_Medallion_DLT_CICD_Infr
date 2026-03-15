@@ -1,0 +1,55 @@
+bundle:
+  name: data_pipeline
+
+variables:
+  catalog_name:
+    default: {}
+  schema_name:
+    default: tickets
+  sp_id: {}
+  
+run_as:
+  service_principal_name: ${var.sp_id}
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    workspace:
+      host: https://adb-some_dev_workspace.azuredatabricks.net/
+    variables:
+      sp_id: some_sp_num
+      catalog_name: dev_catalog
+
+  prod:
+    workspace:
+      host: https://adb-some_prod_workspace.azuredatabricks.net/
+    mode: production 
+    variables:
+      sp_id: some_different_sp_num
+      catalog_name: prod_catalog
+    resources:
+      pipelines:
+        dlt_pipeline:
+          development: false 
+
+
+resources:
+  pipelines:
+    dlt_pipeline:
+      name: ${bundle.target}_insights
+      catalog: ${var.catalog_name}
+      target: ${var.schema_name}
+      serverless: true    
+      continuous: false
+      libraries:
+        - file:
+            path: src/dlt_pipelines/bronze.py
+        - file:
+            path: src/dlt_pipelines/silver.py
+        - file:
+            path: src/dlt_pipelines/gold.py
+      configuration:
+        landing_zone_path: /Volumes/${var.catalog_name}/${var.schema_name}/lz_jira_tickets
+        checkpoint_path: /Volumes/${var.catalog_name}/${var.schema_name}/checkpoints

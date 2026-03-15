@@ -1,0 +1,11 @@
+resources:
+  jobs:
+    jira_trigger_job:
+      name: ${bundle.target}_pipeline_trigger
+      trigger:
+        file_arrival:
+          url: /Volumes/${var.catalog_name}/${var.schema_name}/lz_jira_tickets/
+      tasks:
+        - task_key: run_dlt_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.dlt_pipeline.id}
